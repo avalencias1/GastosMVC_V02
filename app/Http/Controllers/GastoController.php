@@ -13,6 +13,8 @@ class GastoController extends Controller
     public function index()
     {
         //
+        $gastos = gasto::all();
+        return view('gasto.index', compact('gastos'));
     }
 
     /**
@@ -29,6 +31,23 @@ class GastoController extends Controller
     public function store(Request $request)
     {
         //
+        $gastos = new gasto();
+        $gastos->id_gst = 0; /*AUTO GENERADO*/
+        $gastos->codigo_gst = $request->codigo_gst; /*$request->input*/
+        $gastos->fecha_gst = $request->fecha_gst;
+        $gastos->valorTotalSinIva_gst = $request->valorTotalSinIva_gst;
+        $gastos->ivaTotal_gst = $request->ivaTotal_gst;
+        $gastos->lugar_gst = $request->lugar_gst;
+        $gastos->descripcion_gst = $request->descripcion_gst;        
+        $gastos->valorTotalConIva_gst = $request->valorTotalSinIva_gst + 
+                ($request->valorTotalSinIva_gst * $request->ivaTotal_gst / 100);
+        
+        $gastos->nombreUsuario_gst = auth()->user()->name;
+        $gastos->id_usr_gst = auth()->user()->id;
+
+        $gastos->save();
+
+        return redirect()->route('home.index');
     }
 
     /**
@@ -42,24 +61,46 @@ class GastoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(gasto $gasto)
+    public function edit($id)
     {
         //
+        
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, gasto $gasto)
+    public function update(Request $request,$id)
     {
-        //
+        //        
+        $gastos = Gasto::find($id);
+        $gastos->codigo_gst = $request->input('codigo_gst');
+        $gastos->fecha_gst = $request->input('fecha_gst');
+        $gastos->valorTotalSinIva_gst = $request->input('valorTotalSinIva_gst');
+        $gastos->ivaTotal_gst = $request->input('ivaTotal_gst');
+        $gastos->lugar_gst = $request->input('lugar_gst');
+        $gastos->descripcion_gst = $request->input('descripcion_gst');        
+        $gastos->valorTotalConIva_gst = $request->input('valorTotalSinIva_gst') + 
+                ($request->input('valorTotalSinIva_gst') * $request->input('ivaTotal_gst') / 100);
+        
+        $gastos->nombreUsuario_gst = auth()->user()->name;
+        $gastos->id_usr_gst = auth()->user()->id;
+
+        $gastos->update();
+        /*return redirect()->route('home.index');*/        
+        return redirect()->back();        
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(gasto $gasto)
+    public function destroy($id)
     {
         //
+        $gastos = Gasto::find($id); 
+        $gastos->delete();
+        /*return redirect()->route('home.index');        */
+        return redirect()->back();        
     }
 }
